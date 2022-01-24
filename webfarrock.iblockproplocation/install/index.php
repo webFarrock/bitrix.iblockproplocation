@@ -1,73 +1,72 @@
 <?php
 
 IncludeModuleLangFile(__FILE__);
-Class webfarrock_iblockproplocation extends CModule
-{
-	var $MODULE_ID = "webfarrock.iblockproplocation";
-	var $MODULE_VERSION;
-	var $MODULE_VERSION_DATE;
-	var $MODULE_NAME;
-	var $MODULE_DESCRIPTION;
-	var $MODULE_GROUP_RIGHTS = "Y";
-	var $PARTNER_URI;
 
-	function webfarrock_iblockproplocation()
-	{
-		$arModuleVersion = array();
+Class webfarrock_iblockproplocation extends CModule {
 
-		$path = str_replace("\\", "/", __FILE__);
-		$path = substr($path, 0, strlen($path) - strlen("/index.php"));
-		include($path."/version.php");
+    var $MODULE_ID = "webfarrock.iblockproplocation";
+    var $MODULE_VERSION;
+    var $MODULE_VERSION_DATE;
+    var $MODULE_NAME;
+    var $MODULE_DESCRIPTION;
+    var $MODULE_GROUP_RIGHTS = "Y";
+    var $PARTNER_URI;
 
-		$this->MODULE_VERSION = $arModuleVersion["VERSION"];
-		$this->MODULE_VERSION_DATE = $arModuleVersion["VERSION_DATE"];
+    function webfarrock_iblockproplocation() {
+        $arModuleVersion = array();
 
-		$this->MODULE_NAME = GetMessage('WEBFARROCK_IBLOCKPROP_LOCATION_MODULE_NAME');
-		$this->MODULE_DESCRIPTION = GetMessage('WEBFARROCK_IBLOCKPROP_LOCATION_MODULE_DESCRIPTION');
+        $path = str_replace("\\", "/", __FILE__);
+        $path = substr($path, 0, strlen($path) - strlen("/index.php"));
+        include($path . "/version.php");
 
-		$this->PARTNER_NAME = "webFarrock";
-		$this->PARTNER_URI = "http://webfarrock.ru";
-	}
+        $this->MODULE_VERSION = $arModuleVersion["VERSION"];
+        $this->MODULE_VERSION_DATE = $arModuleVersion["VERSION_DATE"];
 
-	function InstallFiles(){
-		CopyDirFiles( __DIR__."/components", $_SERVER["DOCUMENT_ROOT"]."/bitrix/components", true, true);
-	}
+        $this->MODULE_NAME = GetMessage('WEBFARROCK_IBLOCKPROP_LOCATION_MODULE_NAME');
+        $this->MODULE_DESCRIPTION = GetMessage('WEBFARROCK_IBLOCKPROP_LOCATION_MODULE_DESCRIPTION');
 
-	function InstallDB($install_wizard = true){
-		RegisterModule($this->MODULE_ID);
-		return true;
-	}
+        $this->PARTNER_NAME = "webFarrock";
+        $this->PARTNER_URI = "http://webfarrock.ru";
+    }
 
-	function UnInstallDB($arParams = Array()){
-		UnRegisterModule($this->MODULE_ID);
-		return true;
-	}
+    function InstallFiles() {
+        CopyDirFiles(__DIR__ . "/components", $_SERVER["DOCUMENT_ROOT"] . "/bitrix/components", true, true);
+    }
 
-	function DoInstall(){
+    function InstallDB($install_wizard = true) {
+        RegisterModule($this->MODULE_ID);
+        return true;
+    }
 
-		if(!IsModuleInstalled("sale")){
-			global $APPLICATION;
-			echo __DIR__;
-			$APPLICATION->IncludeAdminFile(GetMessage("WEBFARROCK_IBLOCKPROP_LOCATION_INSTALL_TITLE"), __DIR__."/error.php");
-			return false;
-		}else{
+    function UnInstallDB($arParams = Array()) {
+        UnRegisterModule($this->MODULE_ID);
+        return true;
+    }
 
-			RegisterModuleDependences("iblock", "OnIBlockPropertyBuildList", $this->MODULE_ID, "WebFarrockIblockPropLocation", "GetUserTypeDescription");
+    function DoInstall() {
 
-			$this->InstallDB(false);
-			$this->InstallFiles();
-		}
-	}
+        if (!IsModuleInstalled("sale")) {
+            global $APPLICATION;
+            echo __DIR__;
+            $APPLICATION->IncludeAdminFile(GetMessage("WEBFARROCK_IBLOCKPROP_LOCATION_INSTALL_TITLE"), __DIR__ . "/error.php");
+            return false;
+        } else {
 
-	function DoUninstall(){
+            RegisterModuleDependences("iblock", "OnIBlockPropertyBuildList", $this->MODULE_ID, "WebFarrockIblockPropLocation", "GetUserTypeDescription");
+            RegisterModuleDependences("main", "OnUserTypeBuildList", $this->MODULE_ID, "WebFarrockUserPropLocation", "GetUserTypeDescription"); // MOD
 
-		UnRegisterModuleDependences("iblock", "OnIBlockPropertyBuildList", $this->MODULE_ID, "WebFarrockIblockPropLocation", "GetUserTypeDescription");
+            $this->InstallDB(false);
+            $this->InstallFiles();
+        }
+    }
 
-		$this->UnInstallDB();
-		$this->UnInstallFiles();
-	}
+    function DoUninstall() {
 
+        UnRegisterModuleDependences("iblock", "OnIBlockPropertyBuildList", $this->MODULE_ID, "WebFarrockIblockPropLocation", "GetUserTypeDescription");
+        RegisterModuleDependences("main", "OnUserTypeBuildList", $this->MODULE_ID, "WebFarrockUserPropLocation", "GetUserTypeDescription"); // MOD
 
+        $this->UnInstallDB();
+        $this->UnInstallFiles();
+    }
 
 }
-
